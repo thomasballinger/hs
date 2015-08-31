@@ -13,25 +13,23 @@ data Game = G { board :: [[Int]],
                 location :: (Int, Int)}
 
 newGame = do
-    let b = [take 10 (repeat 0) | x <- [1..10]]
+    let b = [replicate 10 0 | x <- [1..20]]
     G b pieceT (3, 3)
 
 boardView game = withPiece (activePiece game) (board game)
 
 activePiece game = pieceAtPos (piece game) (location game)
 
-freezePiece game = G (boardView game) pieceT (0, 0)
+freezePiece game = G (boardView game) pieceL (0, 0)
 
 pieceFits :: Game -> Bool
 pieceFits game =
     let p = activePiece game in
         not (any (spotBad (board game)) (spots p))
 
-
-spotFilled board (x, y) = (((board!!y)!!x) /= 0)
-spotExists board (x, y) = (y < length board) && (x < (length (head board)))
-spotBad board spot = (not (spotExists board spot)) || spotFilled board spot
-
+spotFilled board (x, y) = ((board!!y)!!x) /= 0
+spotExists board (x, y) = (y < length board) && x < length (head board)
+spotBad board spot = not (spotExists board spot) || spotFilled board spot
 
 dropPiece :: Game -> Game
 dropPiece g =
@@ -41,14 +39,22 @@ dropPiece g =
             then newG
             else freezePiece g
 
-withBlock (x, y) board =
-    [if (fst l) == y
-     then [if (fst m) == x
-           then 1
+movePiece :: Game -> Int -> Game
+movePiece g dx =
+    let (x, y) = location g in
+        let newG = G (board g) (piece g) (x + dx, y) in
+            if pieceFits newG
+            then newG
+            else g
+
+withBlock t (x, y) board =
+    [if fst l == y
+     then [if fst m == x
+           then t
            else (snd m) | m <- zip [0..] (snd l)]
      else (snd l) | l <- (zip [0..] board)]
 
-withPiece piece board = foldr withBlock board (spots piece)
+withPiece piece board = foldr (withBlock (texture piece)) board (spots piece)
 
 offset (dx, dy) (x, y) = (dx + x, dy + y)
 
@@ -59,5 +65,12 @@ gameBoardWithPiece game = do
     let ((piece, (dx, dy)), board) = game
     let placedPiece = [(x+dx, y+dy) | (x, y) <- piece]
     1
+
+gameTick :: Game -> Char -> Game
+gameTick game 'a' = movePiece game (0-1)
+gameTick game 'd' = movePiece game 1
+--gameTick game 'e' = rotatePiece 1 game
+--gameTick game 'q' = rotatePiece 1 game
+gameTick game _ = dropPiece game
 
 gamestates = iterate dropPiece newGame
