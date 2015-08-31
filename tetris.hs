@@ -7,12 +7,12 @@ pieceO = P [(0, 0), (0, 1), (1, 0), (1, 1)]
 
 data Piece = P [ (Int, Int) ] deriving (Show, Eq)
 
-data Game = G { board :: [String],
+data Game = G { board :: [[Int]],
                 piece :: Piece,
                 location :: (Int, Int)}
 
 newGame = do
-    let b = [take 10 (repeat ' ') | x <- [1..10]]
+    let b = [take 10 (repeat 0) | x <- [1..10]]
     G b pieceT (3, 3)
 
 boardView game = withPiece (activePiece game) (board game)
@@ -27,7 +27,7 @@ pieceFits game =
         not (any (spotBad (board game)) spots)
 
 
-spotFilled board (x, y) = (((board!!y)!!x) == 'x')
+spotFilled board (x, y) = (((board!!y)!!x) /= 0)
 spotExists board (x, y) = (y < length board) && (x < (length (head board)))
 spotBad board spot = (not (spotExists board spot)) || spotFilled board spot
 
@@ -50,14 +50,16 @@ boardDisplay board = do
 displayLines lines = do
     if null lines
         then putStrLn (take 10 (repeat '-'))
-        else do
-            putStrLn (head lines)
-            displayLines (tail lines)
+        else
+            let line = head lines in
+                do
+                    putStrLn [if x == 0 then ' ' else 'x' | x <- line]
+                    displayLines (tail lines)
 
 withBlock (x, y) board =
     [if (fst l) == y
      then [if (fst m) == x
-           then 'x'
+           then 1
            else (snd m) | m <- zip [0..] (snd l)]
      else (snd l) | l <- (zip [0..] board)]
 
@@ -78,7 +80,7 @@ gamestates = iterate dropPiece newGame
 tick g = do
     clear
     display g
-    threadDelay 200000
+    threadDelay 50000
 
 clear = do
     putStr "\x1b[2J"
