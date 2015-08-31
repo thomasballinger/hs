@@ -48,6 +48,17 @@ movePiece g dx =
             then newG
             else g
 
+rotatedPiece :: Game -> Game
+rotatedPiece (G b (P _ 1) l) = G b pieceL l
+rotatedPiece (G b (P _ 2) l) = G b pieceO l
+rotatedPiece (G b (P _ 3) l) = G b pieceT l
+rotatedPiece g = g
+
+rotatePiece :: Game -> Game
+rotatePiece g = if pieceFits (rotatedPiece g)
+                then rotatedPiece g
+                else g
+
 withBlock t (x, y) board =
     [if fst l == y
      then [if fst m == x
@@ -70,8 +81,8 @@ gameBoardWithPiece game = do
 gameTick :: Game -> Char -> Game
 gameTick game 'a' = movePiece game (0-1)
 gameTick game 'd' = movePiece game 1
---gameTick game 'e' = rotatePiece 1 game
---gameTick game 'q' = rotatePiece 1 game
+gameTick game 'e' = rotatePiece game
+gameTick game 'q' = rotatePiece game
 gameTick game _ = dropPiece game
 
 gamestates = iterate dropPiece newGame

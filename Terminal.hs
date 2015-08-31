@@ -6,6 +6,7 @@ import System.IO
 
 color :: String -> String
 color "red" = "\x1b[31m"
+color "green" = "\x1b[32m"
 color "yellow" = "\x1b[33m"
 color _ = ""
 
@@ -20,6 +21,9 @@ showCursor = "\x1b[?25h"
 strAtSpot x y s = "\x1b[" ++ (show $ y + 1 ) ++ ";" ++ (show (x + 1)) ++ "H" ++ s
 putStrAtSpot x y s = putStr $ saveCursor ++ (strAtSpot x y s) ++ restoreCursor
 
+clear = do
+    putStr "\x1b[2J"
+    hFlush stdout
 
 moveX :: Char -> Integer -> Integer
 moveX 'h' x = x - 1

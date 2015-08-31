@@ -7,7 +7,7 @@ import TetrisGame
 import Terminal
 
 
-blockDisplay n = (" " : [colored color "x" | color <- ["red", "yellow"]])!!n
+blockDisplay n = (" " : [colored color "x" | color <- ["red", "yellow", "green"]])!!n
 
 display game = boardDisplay (boardView game)
 
@@ -34,15 +34,6 @@ tick g i = do
     let newgame = gameTick g c
     return newgame
 
-clear = do
-    putStr "\x1b[2J"
-    hFlush stdout
-
-cleanup = do
-    hSetBuffering stdin LineBuffering
-    hSetEcho stdin True
-    print ""
-
 mainIO = do
     putStrLn $ colored "red" "Let's play Tetris!"
     foldM_ tick newGame [0..]
@@ -51,6 +42,8 @@ main = bracket_
     (do
         hSetBuffering stdin NoBuffering
         hSetEcho stdin False)
-    cleanup
+    (do
+        hSetBuffering stdin LineBuffering
+        hSetEcho stdin True)
     mainIO
 
