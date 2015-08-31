@@ -1,4 +1,8 @@
+module Terminal where
+
 import System.IO
+
+
 
 color :: String -> String
 color "red" = "\x1b[31m"
@@ -8,7 +12,6 @@ color _ = ""
 colored :: String -> String -> String
 colored c s = color(c) ++ s ++ "\x1b[37m"
 
-clear = "\x1b[2J"
 saveCursor = "\x1b[s"
 restoreCursor = "\x1b[s"
 hideCursor = "\x1b[?25l"
@@ -30,13 +33,12 @@ moveY _ y = y
 face = "(◕‿◕)"
 
 mainloop x y = do
-    putStr clear
     putStrAtSpot x y (colored "red" face)
     hFlush stdout
     c <- getChar
     mainloop (moveX c x) (moveY c y)
 
-main = do
+stuff = do
     putStrLn $ colored "red" "type things!"
     hSetBuffering stdin NoBuffering
     hSetEcho stdin False
