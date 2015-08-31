@@ -1,3 +1,5 @@
+import Control.Concurrent
+import System.IO
 
 pieceT = P [(0, 1), (1, 1), (2, 1), (1, 2)]
 pieceL = P [(0, 2), (0, 1), (0, 0), (1, 0)]
@@ -9,13 +11,39 @@ data Game = G { board :: [String],
                 piece :: Piece,
                 location :: (Int, Int)}
 
+newGame = do
+    let b = [take 10 (repeat ' ') | x <- [1..10]]
+    G b pieceT (3, 3)
+
+boardView game = withPiece (activePiece game) (board game)
+
+activePiece game = pieceAtPos (piece game) (location game)
+
+freezePiece game = G (boardView game) pieceT (0, 0)
+
+pieceFits :: Game -> Bool
+pieceFits game =
+    let (P spots) = activePiece game in
+        not (any (spotBad (board game)) spots)
+
+
+spotFilled board (x, y) = (((board!!y)!!x) == 'x')
+spotExists board (x, y) = (y < length board) && (x < (length (head board)))
+spotBad board spot = (not (spotExists board spot)) || spotFilled board spot
+
+
 dropPiece :: Game -> Game
 dropPiece g =
     let (x, y) = location g in
-        G (board g) (piece g) (x, y+1)
+        let newG = G (board g) (piece g) (x, y+1) in
+            if pieceFits newG
+            then newG
+            else freezePiece g
+
+display game = boardDisplay (boardView game)
 
 
-display board = do
+boardDisplay board = do
     putStrLn (take 10 (repeat '-'))
     displayLines board
 
@@ -26,20 +54,14 @@ displayLines lines = do
             putStrLn (head lines)
             displayLines (tail lines)
 
-withBlock x y board =
+withBlock (x, y) board =
     [if (fst l) == y
      then [if (fst m) == x
            then 'x'
            else (snd m) | m <- zip [0..] (snd l)]
      else (snd l) | l <- (zip [0..] board)]
 
-withBlockInSpot xy board = withBlock (fst xy) (snd xy) board
-withPiece (P spots) board = foldr withBlockInSpot board spots
-
--- [[0,0,0],
---  [0,0,0],
---  [0,0,0]]
-
+withPiece (P spots) board = foldr withBlock board spots
 
 offset (dx, dy) (x, y) = (dx + x, dy + y)
 
@@ -51,13 +73,19 @@ gameBoardWithPiece game = do
     let placedPiece = [(x+dx, y+dy) | (x, y) <- piece]
     1
 
-main = do
-    let b = [take 10 (repeat ' ') | x <- [1..10]]
-    display b
-    -- let board2 = (withPiece (pieceAtPos pieceT (3, 3)) board)
-    let game = G b pieceT (3, 3)
-    display (withPiece (pieceAtPos (piece game) (location game)) (board game))
-    let game2 = dropPiece game
-    display (withPiece (pieceAtPos (piece game2) (location game2)) (board game2))
-    putStrLn ""
+gamestates = iterate dropPiece newGame
 
+tick g = do
+    clear
+    display g
+    threadDelay 200000
+
+clear = do
+    putStr "\x1b[2J"
+    hFlush stdout
+
+main = do
+    -- let board2 = (withPiece (pieceAtPos pieceT (3, 3)) board)
+    let games = take 25 gamestates
+    rs <- sequence (map tick games)
+    print rs
