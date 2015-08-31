@@ -28,7 +28,8 @@ pieceFits game =
         not (any (spotBad (board game)) (spots p))
 
 spotFilled board (x, y) = ((board!!y)!!x) /= 0
-spotExists board (x, y) = (y < length board) && x < length (head board)
+spotExists board (x, y) = (y < length board) && x < length (head board) &&
+                           y > (0-1) && x > (0-1)
 spotBad board spot = not (spotExists board spot) || spotFilled board spot
 
 dropPiece :: Game -> Game

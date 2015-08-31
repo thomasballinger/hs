@@ -1,5 +1,6 @@
 import Control.Concurrent
 import Control.Exception
+import Control.Monad
 import System.IO
 
 import TetrisGame
@@ -25,10 +26,13 @@ displayLines lines =
                     putStrLn (concat [blockDisplay x | x <- line])
                     displayLines (tail lines)
 
-tick g = do
+tick :: Game -> Int -> IO Game
+tick g i = do
     clear
     display g
-    threadDelay 50000
+    c <- getChar
+    let newgame = gameTick g c
+    return newgame
 
 clear = do
     putStr "\x1b[2J"
@@ -41,9 +45,7 @@ cleanup = do
 
 mainIO = do
     putStrLn $ colored "red" "Let's play Tetris!"
-    let games = take 60 gamestates
-    rs <- sequence (map tick games)
-    print rs
+    foldM_ tick newGame [0..]
 
 main = bracket_
     (do
