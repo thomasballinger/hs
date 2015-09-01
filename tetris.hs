@@ -1,10 +1,11 @@
-import Control.Concurrent
 import Control.Exception
+import Control.Concurrent
 import Control.Monad
 import System.IO
 
 import TetrisGame
 import Terminal
+import Music
 
 
 blockDisplay n = (" " : [colored color "x" | color <- ["red", "yellow", "green"]])!!n
@@ -34,16 +35,17 @@ tick g i = do
     let newgame = gameTick g c
     return newgame
 
-mainIO = do
-    putStrLn $ colored "red" "Let's play Tetris!"
-    foldM_ tick newGame [0..]
+mainIO = foldM_ tick newGame [0..]
 
-main = bracket_
-    (do
-        hSetBuffering stdin NoBuffering
-        hSetEcho stdin False)
-    (do
-        hSetBuffering stdin LineBuffering
-        hSetEcho stdin True)
-    mainIO
+main = do
+    putStrLn $ colored "red" "Let's play Tetris!"
+    playMusic
+    bracket_
+        (do
+            hSetBuffering stdin NoBuffering
+            hSetEcho stdin False)
+        (do
+            hSetBuffering stdin LineBuffering
+            hSetEcho stdin True)
+        mainIO
 

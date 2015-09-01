@@ -38,7 +38,19 @@ dropPiece g =
         let newG = G (board g) (piece g) (x, y+1) in
             if pieceFits newG
             then newG
-            else freezePiece g
+            else removeLines (freezePiece g)
+
+isFull :: [Int] -> Bool
+isFull line = notElem 0 line
+
+notFull line = elem 0 line
+
+removeLines :: Game -> Game
+removeLines (G b p l) =
+    let left = filter notFull b in
+        let newLines = (replicate (length b - length left)
+                               (replicate (length (head b)) 0)) in
+            G (newLines ++ left) p l
 
 movePiece :: Game -> Int -> Game
 movePiece g dx =
