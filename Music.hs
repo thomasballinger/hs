@@ -5,6 +5,9 @@ import Sound.ALUT
 
 import Tune
 
+-- code from http://bluishcoder.co.nz/articles/haskell/openal.html
+-- thanks CHRIS DOUBLE
+
 playMusic :: IO ()
 playMusic =
   withProgNameAndArgs runALUTUsingCurrentContext $ \_ _ ->

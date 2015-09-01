@@ -8,23 +8,24 @@ import Terminal
 import Music
 
 
-blockDisplay n = (" " : [colored color "x" | color <- ["red", "yellow", "green"]])!!n
+blockDisplay n = ("   " : [colored color "xxx" | color <- ["red", "yellow", "green"]])!!n
 
 display game = boardDisplay (boardView game)
 
 boardDisplay board = do
-    putStrLn ("\n" ++ replicate 10 '-')
+    putStrLn ("\n" ++ replicate 32 '-')
     displayLines board
 
 displayLines lines =
     if null lines
         then do
-            putStr (replicate 10 '-')
+            putStr (replicate 32 '-')
             hFlush stdout
         else
             let line = head lines in
                 do
-                    putStrLn (concat [blockDisplay x | x <- line])
+                    putStrLn $ "|" ++ concat [blockDisplay x | x <- line] ++ "|"
+                    putStrLn $ "|" ++ concat [blockDisplay x | x <- line] ++ "|"
                     displayLines (tail lines)
 
 tick :: Game -> Int -> IO Game

@@ -1,12 +1,6 @@
 module TetrisGame where
 
-pieceT = P [(0, 1), (1, 1), (2, 1), (1, 2)] 1
-pieceL = P [(0, 2), (0, 1), (0, 0), (1, 0)] 2
-pieceO = P [(0, 0), (0, 1), (1, 0), (1, 1)] 3
-
-data Piece = P { spots :: [ (Int, Int) ],
-                 texture :: Int }
-                 deriving (Show, Eq)
+import Piece
 
 data Game = G { board :: [[Int]],
                 piece :: Piece,
@@ -14,13 +8,13 @@ data Game = G { board :: [[Int]],
 
 newGame = do
     let b = [replicate 10 0 | x <- [1..20]]
-    G b pieceT (3, 3)
+    G b pieceT1 (3, 3)
 
 boardView game = withPiece (activePiece game) (board game)
 
 activePiece game = pieceAtPos (piece game) (location game)
 
-freezePiece game = G (boardView game) pieceL (0, 0)
+freezePiece game = G (boardView game) pieceL1 (0, 0)
 
 pieceFits :: Game -> Bool
 pieceFits game =
@@ -29,7 +23,7 @@ pieceFits game =
 
 spotFilled board (x, y) = ((board!!y)!!x) /= 0
 spotExists board (x, y) = (y < length board) && x < length (head board) &&
-                           y > (0-1) && x > (0-1)
+                           y > (-1) && x > (-1)
 spotBad board spot = not (spotExists board spot) || spotFilled board spot
 
 dropPiece :: Game -> Game
@@ -61,10 +55,7 @@ movePiece g dx =
             else g
 
 rotatedPiece :: Game -> Game
-rotatedPiece (G b (P _ 1) l) = G b pieceL l
-rotatedPiece (G b (P _ 2) l) = G b pieceO l
-rotatedPiece (G b (P _ 3) l) = G b pieceT l
-rotatedPiece g = g
+rotatedPiece (G b p l) = G b (rotate p) l
 
 rotatePiece :: Game -> Game
 rotatePiece g = if pieceFits (rotatedPiece g)

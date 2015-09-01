@@ -1,0 +1,13 @@
+todo
+----
+
+* piece rotating, rest of pieces
+* randomly choose piece
+* death on bad piece spawn
+* timeout on getChar
+* music play during gameplay
+
+ideas
+-----
+
+* networked with Gameboy multiplayer rules
