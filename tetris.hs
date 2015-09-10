@@ -13,13 +13,13 @@ blockDisplay n = ("   " : [colored color "xxx" | color <- ["red", "yellow", "gre
 display game = boardDisplay (boardView game)
 
 boardDisplay board = do
-    putStrLn ("\n" ++ replicate 32 '-')
+    putStrLn ("\n" ++ "+" ++ replicate 30 '-' ++ "+")
     displayLines board
 
 displayLines lines =
     if null lines
         then do
-            putStr (replicate 32 '-')
+            putStr $ "+" ++ replicate 30 '-' ++ "+"
             hFlush stdout
         else
             let line = head lines in
@@ -47,6 +47,8 @@ main = do
             hSetEcho stdin False)
         (do
             hSetBuffering stdin LineBuffering
-            hSetEcho stdin True)
+            hSetEcho stdin True
+            putStrLn "bye"
+            )
         mainIO
 
