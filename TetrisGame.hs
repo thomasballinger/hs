@@ -4,17 +4,19 @@ import Piece
 
 data Game = G { board :: [[Int]],
                 piece :: Piece,
-                location :: (Int, Int)}
+                location :: (Int, Int),
+                seed :: Int}
 
 newGame = do
     let b = [replicate 10 0 | x <- [1..20]]
-    G b pieceT1 (3, 3)
+    G b pieceT1 (3, 3) 12345
 
 boardView game = withPiece (activePiece game) (board game)
 
 activePiece game = pieceAtPos (piece game) (location game)
 
-freezePiece game = G (boardView game) pieceL1 (0, 0)
+freezePiece game = let (newPiece, newSeed) = psuedoRandomPiece (seed game) in
+                       G (boardView game) newPiece (0, 0) newSeed
 
 pieceFits :: Game -> Bool
 pieceFits game =
@@ -23,13 +25,13 @@ pieceFits game =
 
 spotFilled board (x, y) = ((board!!y)!!x) /= 0
 spotExists board (x, y) = (y < length board) && x < length (head board) &&
-                           y > (-1) && x > (-1)
+                           y > 0-1 && x > -1
 spotBad board spot = not (spotExists board spot) || spotFilled board spot
 
 dropPiece :: Game -> Game
 dropPiece g =
     let (x, y) = location g in
-        let newG = G (board g) (piece g) (x, y+1) in
+        let newG = G (board g) (piece g) (x, y+1) (seed g) in
             if pieceFits newG
             then newG
             else removeLines (freezePiece g)
@@ -40,22 +42,22 @@ isFull line = notElem 0 line
 notFull line = elem 0 line
 
 removeLines :: Game -> Game
-removeLines (G b p l) =
+removeLines (G b p l s) =
     let left = filter notFull b in
         let newLines = (replicate (length b - length left)
                                (replicate (length (head b)) 0)) in
-            G (newLines ++ left) p l
+            G (newLines ++ left) p l s
 
 movePiece :: Game -> Int -> Game
 movePiece g dx =
     let (x, y) = location g in
-        let newG = G (board g) (piece g) (x + dx, y) in
+        let newG = G (board g) (piece g) (x + dx, y) (seed g) in
             if pieceFits newG
             then newG
             else g
 
 rotatedPiece :: Game -> Game
-rotatedPiece (G b p l) = G b (rotate p) l
+rotatedPiece (G b p l s) = G b (rotate p) l s
 
 rotatePiece :: Game -> Game
 rotatePiece g = if pieceFits (rotatedPiece g)
