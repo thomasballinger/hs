@@ -8,7 +8,7 @@ import Terminal
 import Music
 
 
-blockDisplay n = ("   " : [colored color "xxx" | color <- ["red", "yellow", "green"]])!!n
+blockDisplay n = ("   " : [colored color "xxx" | color <- ["red", "yellow", "green", "blue", "magenta", "cyan", "white"]])!!n
 
 display game = boardDisplay (boardView game)
 
@@ -40,7 +40,7 @@ mainIO = foldM_ tick newGame [0..]
 
 main = do
     putStrLn $ colored "red" "Let's play Tetris!"
-    playMusic
+    --playMusic
     bracket_
         (do
             hSetBuffering stdin NoBuffering

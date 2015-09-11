@@ -5,21 +5,25 @@ import System.IO
 
 
 color :: String -> String
-color "red" = "\x1b[31m"
-color "green" = "\x1b[32m"
-color "yellow" = "\x1b[33m"
+color "red" = "\x1b[41m"
+color "green" = "\x1b[42m"
+color "yellow" = "\x1b[43m"
+color "blue" = "\x1b[44m"
+color "magenta" = "\x1b[45m"
+color "cyan" = "\x1b[46m"
+color "white" = "\x1b[47m\x1b[30m"
 color _ = ""
 
 colored :: String -> String -> String
-colored c s = color(c) ++ s ++ "\x1b[37m"
+colored c s = color c ++ s ++ "\x1b[0m"
 
 saveCursor = "\x1b[s"
 restoreCursor = "\x1b[s"
 hideCursor = "\x1b[?25l"
 showCursor = "\x1b[?25h"
 
-strAtSpot x y s = "\x1b[" ++ (show $ y + 1 ) ++ ";" ++ (show (x + 1)) ++ "H" ++ s
-putStrAtSpot x y s = putStr $ saveCursor ++ (strAtSpot x y s) ++ restoreCursor
+strAtSpot x y s = "\x1b[" ++ show ( y + 1 ) ++ ";" ++ show (x + 1) ++ "H" ++ s
+putStrAtSpot x y s = putStr $ saveCursor ++ strAtSpot x y s ++ restoreCursor
 
 clear = do
     putStr "\x1b[2J"
