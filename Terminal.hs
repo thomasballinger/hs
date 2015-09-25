@@ -25,8 +25,17 @@ showCursor = "\x1b[?25h"
 strAtSpot x y s = "\x1b[" ++ show ( y + 1 ) ++ ";" ++ show (x + 1) ++ "H" ++ s
 putStrAtSpot x y s = putStr $ saveCursor ++ strAtSpot x y s ++ restoreCursor
 
-clear = do
+newScreen = do
     putStr "\x1b[2J"
+    hFlush stdout
+
+cursorToBottomLeft = do
+    putStr "\x1b[1000D"
+    putStr "\x1b[1000B"
+    hFlush stdout
+
+cursorUp n = do
+    putStr $ "\x1b[" ++ show n ++ "A"
     hFlush stdout
 
 moveX :: Char -> Integer -> Integer
