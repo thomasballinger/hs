@@ -6,6 +6,7 @@ data Game = G { board :: [[Int]],
                 piece :: Piece,
                 location :: (Int, Int),
                 seed :: Int}
+                deriving (Show, Eq)
 
 newGame = do
     let b = [replicate 10 0 | x <- [1..20]]

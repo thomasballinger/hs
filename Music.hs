@@ -8,8 +8,8 @@ import Tune
 -- code from http://bluishcoder.co.nz/articles/haskell/openal.html
 -- thanks CHRIS DOUBLE
 
-playMusic :: IO ()
-playMusic =
+startMusic :: IO ()
+startMusic =
   withProgNameAndArgs runALUTUsingCurrentContext $ \_ _ ->
   do
     (Just device) <- openDevice Nothing
@@ -19,8 +19,8 @@ playMusic =
     [source] <- genObjectNames 1
     queueBuffers source buffers
     play [source]
-    sleep 6.2
-    closeDevice device
+    print device
+--    closeDevice device
     return ()
 
 -- main = playSound

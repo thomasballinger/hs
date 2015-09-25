@@ -1,13 +1,10 @@
 todo
 ----
 
-* piece rotating, rest of pieces
-* randomly choose piece
+* networked with Gameboy multiplayer rules
 * death on bad piece spawn
-* timeout on getChar
-* music play during gameplay
+* fix timing to prevent stalling
 
 ideas
 -----
 
-* networked with Gameboy multiplayer rules

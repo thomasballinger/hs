@@ -32,6 +32,6 @@ solfegeToFreq "Sol2" = 2** (31.0/12.0)
 solfegeToFreq "La2" = 2 ** (33.0/12.0)
 solfegeToFreq "Ti2" = 2 ** (35.0/12.0)
 
-toneFromSolfege n = Sine ((solfegeToFreq (note n)) * 50) 0 ((duration n) / 10.0)
+toneFromSolfege n = Sine (solfegeToFreq (note n) * 50) 0 (duration n / 5.0)
 
 sinesFromSong song = [toneFromSolfege n | n <- parseSong song]
