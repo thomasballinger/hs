@@ -93,6 +93,7 @@ main = do
         (do
             hSetBuffering stdin LineBuffering
             hSetEcho stdin True
+            newScreen
             putStrLn "bye"
             )
         (mainIO sock)
